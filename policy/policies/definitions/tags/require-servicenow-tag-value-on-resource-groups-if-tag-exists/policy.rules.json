@@ -1,0 +1,29 @@
+{
+    "if": {
+        "allOf": [
+            {
+                "field": "type",
+                "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+            },
+            {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "exists": "true"
+            },
+            {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "notLike": "CHG*"
+            },
+            {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "notLike": "INC*"
+            },
+            {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "notLike": "RITM*"
+            }
+        ]
+    },
+    "then": {
+        "effect": "[parameters('effectType')]"
+    }
+}

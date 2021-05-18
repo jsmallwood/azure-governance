@@ -1,0 +1,59 @@
+{
+    "name": "Require ServiceNow Tag value on Resource Groups if Tag Exists",
+    "properties": {
+        "displayName": "Require ServiceNow Tag value on Resource Groups if Tag Exists",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Enforces a pattern for ServiceNow Tag values on resource groups if the Tag exists.",
+        "metadata": {
+            "category": "Tags",
+            "createdBy": "Jason Smallwood",
+            "version": "1.0.0.0"
+        },
+        "parameters": {
+            "tagName": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Tag Name",
+                    "description": "Name of the tag, such as 'ServiceNowRequest'"
+                }
+            },
+            "effectType": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect Type",
+                    "description": "Effect Type"
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "exists": "true"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notLike": "CHG*"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notLike": "INC*"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notLike": "RITM*"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effectType')]"
+            }
+        }
+    }
+}

@@ -1,0 +1,105 @@
+{
+    "effectType": {
+        "type": "string",
+        "metadata": {
+         "displayName": "Effect Type",
+         "description": null
+        },
+        "allowedValues": [
+         "audit",
+         "deny"
+        ],
+        "defaultValue": "deny"
+       },
+    "environmentTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Environment Tag Name",
+      "description": null
+     },
+     "defaultValue": "Environment"
+    },
+    "environmentTagValue": {
+        "type": "string",
+        "metadata": {
+         "displayName": "Environment Tag Value",
+         "description": null
+        },
+        "allowedValues": [
+         "Dev",
+         "Prod"
+        ],
+        "defaultValue": "Prod"
+       },
+    "stakeholderTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Stakeholder Tag Name",
+      "description": null
+     },
+     "defaultValue": "Stakeholders"
+    },
+    "businessOwnerTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Business Owner Tag Name",
+      "description": null
+     },
+     "defaultValue": "BusinessOwner"
+    },
+    "costCenterTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Cost Center Tag Name",
+      "description": null
+     },
+     "defaultValue": "CostCenter"
+    },
+    "projectCostCenterTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Project Cost Center Tag Name",
+      "description": null
+     },
+     "defaultValue": "PmCostCenter"
+    },
+    "applicationTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Application Tag Name",
+      "description": null
+     },
+     "defaultValue": "Application"
+    },
+    "ciidTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "CIID Tag Name",
+      "description": "Configuration Item ID Tag Name"
+     },
+     "defaultValue": "CIID"
+    },
+    "serviceNowTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "ServiceNow Tag Name",
+      "description": "Tag name for ServiceNow Tickets"
+     },
+     "defaultValue": "ServiceNowRequest"
+    },
+    "createdByTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Created By Tag Name",
+      "description": null
+     },
+     "defaultValue": "CreatedBy"
+    },
+    "createdOnTagName": {
+     "type": "string",
+     "metadata": {
+      "displayName": "Created On Date Tag Name"
+     },
+     "defaultValue": "CreatedOnDate"
+    }
+}

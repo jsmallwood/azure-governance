@@ -1,0 +1,23 @@
+{
+    "tagName": {
+        "type": "String",
+        "metadata": {
+            "displayName": "Tag Name",
+            "description": "Name of the tag, such as 'environment'"
+        }
+    },
+    "effectType": {
+        "type": "String",
+        "metadata": {
+            "displayName": "Effect Type",
+            "description": "Effect Type"
+        },
+        "defaultValue": "deny",
+        "allowedValues": [
+            "audit",
+            "auditifnotexists",
+            "deny",
+            "disabled"
+        ]
+    }
+}

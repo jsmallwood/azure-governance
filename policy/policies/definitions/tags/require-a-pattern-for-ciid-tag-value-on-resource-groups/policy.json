@@ -1,0 +1,108 @@
+{
+    "properties": {
+      "displayName": "Require a pattern for CIID Tag Value on Resource Groups",
+      "policyType": "Custom",
+      "mode": "All",
+      "description": "Enforces a pattern for CIID Tag Value on Resource Groups.",
+      "metadata": {
+        "category": "Tags",
+        "createdBy": "Jason Smallwood",
+        "version": "1.0.0.0"
+    },
+      "parameters": {
+        "tagName": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Tag Name",
+            "description": "Name of the tag, such as 'CIDB'"
+          }
+        },
+        "effectType": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect Type",
+            "description": "Effect Type"
+          }
+        }
+      },
+      "policyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM....."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM......"
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM......"
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM......."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM........"
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM........."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM..........."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM............"
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM............."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM.............."
+              }
+            },
+            {
+              "not": {
+                "field": "[concat('tags[', parameters('tagName'), ']')]",
+                "match": "ASM.............."
+              }
+            }
+          ]
+        },
+        "then": {
+          "effect": "[parameters('effectType')]"
+        }
+      }
+    }
+  }

@@ -1,0 +1,42 @@
+{
+    "name": "Add a Tag with the Created on Date when Resource is created",
+    "properties": {
+        "displayName": "Add a Tag with the Created on Date when Resource is created",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Add a Tag with the Created on Date when Resource is created.",
+        "metadata": {
+            "category": "Tags",
+            "createdBy": "Jason Smallwood",
+            "version": "1.0.0.0"
+        },
+        "parameters": {
+            "tagName": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "tagName"
+                },
+                "defaultValue": "CreatedOnDate"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "exists": "false"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "append",
+                "details": [
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "value": "[concat(substring(utcNow(),5,2), '/', substring(utcNow(),8,2), '/', substring(utcNow(),0,4))]"
+                    }
+                ]
+            }
+        }
+    }
+}

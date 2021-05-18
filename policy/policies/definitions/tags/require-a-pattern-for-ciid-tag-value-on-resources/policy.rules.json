@@ -1,0 +1,75 @@
+{
+    "if": {
+        "allOf": [
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM....."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM......"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM......"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM......."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM........"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM........."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM..........."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM............"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM............."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM.............."
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "match": "ASM.............."
+                }
+            }
+        ]
+    },
+    "then": {
+        "effect": "[parameters('effectType')]"
+    }
+}

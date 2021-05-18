@@ -1,0 +1,59 @@
+{
+    "name": "Require a numeric Tag Value on Resource Groups",
+    "properties": {
+        "displayName": "Require a numeric Tag Value on Resource Groups",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Enforces a numeric Tag Value on Resource Groups.",
+        "metadata": {
+            "category": "Tags",
+            "createdBy": "Jason Smallwood",
+            "version": "1.0.0.0"
+        },
+        "parameters": {
+            "tagName": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Tag Name",
+                    "description": "Name of the tag, such as 'environment'"
+                }
+            },
+            "effectType": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect Type",
+                    "description": "Effect Type"
+                }
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notMatch": "####"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notMatch": "#####"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notMatch": "######"
+                    },
+                    {
+                        "field": "[concat('tags[', parameters('tagName'), ']')]",
+                        "notMatch": "#######"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effectType')]"
+            }
+        }
+    }
+}

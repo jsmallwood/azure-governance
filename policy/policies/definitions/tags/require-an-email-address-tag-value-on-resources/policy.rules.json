@@ -1,0 +1,27 @@
+{
+    "if": {
+        "allOf": [
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "contains": ".com"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "contains": ".net"
+                }
+            },
+            {
+                "not": {
+                    "field": "[concat('tags[', parameters('tagName'), ']')]",
+                    "contains": ".org"
+                }
+            }
+        ]
+    },
+    "then": {
+        "effect": "[parameters('effectType')]"
+    }
+}

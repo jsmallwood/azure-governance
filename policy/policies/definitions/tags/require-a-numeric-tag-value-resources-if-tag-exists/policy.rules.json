@@ -1,0 +1,29 @@
+{
+    "if": {
+     "allOf": [
+      {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "exists": "true"
+      },
+      {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "notMatch": "####"
+      },
+      {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "notMatch": "#####"
+      },
+      {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "notMatch": "######"
+      },
+      {
+       "field": "[concat('tags[', parameters('tagName'), ']')]",
+       "notMatch": "#######"
+      }
+     ]
+    },
+    "then": {
+     "effect": "[parameters('effectType')]"
+    }
+   }
