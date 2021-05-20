@@ -73,9 +73,8 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
                 "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                    "appSettings": [            {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2019-06-01').keys[0].value)]"
                         },
                         {

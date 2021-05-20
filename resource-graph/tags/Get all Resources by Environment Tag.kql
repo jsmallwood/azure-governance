@@ -1,0 +1,2 @@
+resources
+| where tags.NS_Environment =~ 'PRD - Production'

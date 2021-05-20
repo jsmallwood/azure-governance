@@ -1,0 +1,3 @@
+Resources
+| where type == "microsoft.compute/virtualmachines"
+| summarize Count=count(properties.hardwareProfile.vmSize) by vmSize=tostring(properties.hardwareProfile.vmSize)

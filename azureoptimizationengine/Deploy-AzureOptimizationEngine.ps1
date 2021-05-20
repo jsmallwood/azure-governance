@@ -546,6 +546,8 @@ if ("Y", "y" -contains $continueInput) {
         Write-Host "(The Automation Run As account was already deployed)" -ForegroundColor Green
     }
 
+    
+    #region Deploy SQL Database model
     Write-Host "Deploying SQL Database model..." -ForegroundColor Green
 
     $sqlPassPlain = (New-Object PSCredential "user", $sqlPass).GetNetworkCredential().Password
@@ -662,7 +664,9 @@ if ("Y", "y" -contains $continueInput) {
 
     Write-Host "Deleting temporary SQL Server firewall rule..." -ForegroundColor Green
     Remove-AzSqlServerFirewallRule -FirewallRuleName $tempFirewallRuleName -ResourceGroupName $resourceGroupName -ServerName $sqlServerName
+    #endregion
 
+    #region Grant AAD Global Reader to Azure Automation
     try
     {
         Write-Host "Granting Azure AD Global Reader role to the Automation Run As Account (look for the login window that may have popped up)..." -ForegroundColor Green
@@ -693,7 +697,7 @@ if ("Y", "y" -contains $continueInput) {
         Write-Host $Error[0] -ForegroundColor Yellow
         Write-Host "Could not grant role. If you want Azure AD-based recommendations, please grant the Global Reader role manually to the $spnName Service Principal." -ForegroundColor Red
     }
-
+    #endregion
     Write-Host "Deployment completed!" -ForegroundColor Green
 }
 else {

@@ -8,6 +8,13 @@
                 "description": "The name of the Event Grid Topic. If left blank a new topic will be created."
             },
             "defaultValue": ""
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Resource Tags object."
+            },
+            "defaultValue": {}
         }
     },
     "functions": [],
@@ -20,6 +27,7 @@
             "type": "Microsoft.EventGrid/systemTopics",
             "apiVersion": "2020-04-01-preview",
             "location": "global",
+            "tags": "[parameters('tags')]",
             "properties": {
                 "source": "[subscription().id]",
                 "topicType": "Microsoft.Resources.Subscriptions"

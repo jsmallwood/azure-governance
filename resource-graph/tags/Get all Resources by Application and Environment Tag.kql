@@ -1,0 +1,3 @@
+resources
+| where tags.NS_Application =~ 'EXE - Example Application'
+| where tags.NS_Environment =~ 'PRD - Production'
