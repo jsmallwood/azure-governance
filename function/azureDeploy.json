@@ -14,14 +14,14 @@
             "metadata": {
                 "description": "link to the function code"
             },
-            "defaultValue": "https://github.com/jsmallwood/azure-function-governance.git"        
+            "defaultValue": "https://github.com/jsmallwood/azure-governance-function.git"        
         },
         "function-template": {
             "type": "string",
             "metadata": {
                 "description": "description"
             },
-            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-function-governance/main/deploy/function.json"
+            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/function.json"
         },
         "eventGridTopicName": {
             "type": "string",
@@ -35,7 +35,7 @@
             "metadata": {
                 "description": "description"
             },
-            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-function-governance/main/deploy/eventGrid-Topic.json"
+            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/eventGrid-Topic.json"
         },
         "eventGridSubscriptionName": {
             "type": "string",
@@ -49,7 +49,7 @@
             "metadata": {
                 "description": "description"
             },
-            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-function-governance/main/deploy/eventGrid-Subscription.json"
+            "defaultValue": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/eventGrid-Subscription.json"
         }
     },
     "functions": [],

@@ -14,7 +14,7 @@
             "metadata": {
                 "description": ""
             },
-            "defaultValue": "https://github.com/jsmallwood/azure-function-governance.git"
+            "defaultValue": "https://github.com/jsmallwood/azure-governance-function.git"
         },
         "planName": {
             "type": "string",
