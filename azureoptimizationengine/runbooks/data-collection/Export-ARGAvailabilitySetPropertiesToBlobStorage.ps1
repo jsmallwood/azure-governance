@@ -73,6 +73,8 @@ if (-not([string]::IsNullOrEmpty($externalCredentialName)))
     $cloudEnvironment = $externalCloudEnvironment   
 }
 
+$tenantId = (Get-AzContext).Tenant.Id
+
 $allAvSets = @()
 
 Write-Output "Getting subscriptions target $TargetSubscription"
@@ -84,7 +86,7 @@ if (-not([string]::IsNullOrEmpty($TargetSubscription)))
 else
 {
     $subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"}
-    $subscriptionSuffix = $cloudSuffix + "all"
+    $subscriptionSuffix = $cloudSuffix + "all-" + $tenantId
 }
 
 $avSetsTotal = @()
@@ -107,7 +109,11 @@ do
     }
     else
     {
-        $avSets = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $avSets = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($avSets -and $avSets.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $avSets = $avSets.Data
     }
     $resultsCount = $avSets.Count
     $resultsSoFar += $resultsCount

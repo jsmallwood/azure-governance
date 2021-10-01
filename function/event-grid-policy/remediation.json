@@ -1,0 +1,422 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "targetMG": {
+            "type": "string",
+            "metadata": {
+                "description": "Target Management Group"
+            }
+        },
+        "allowedLocations": {
+            "type": "array",
+            "defaultValue": [
+                "australiaeast",
+                "australiasoutheast",
+                "australiacentral"
+            ],
+            "metadata": {
+                "description": "An array of the allowed locations, all other locations will be denied by the created policy."
+            }
+        },
+        "enableRemediation": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        }
+    },
+    "variables": {
+        "mgScope": "[tenantResourceId('Microsoft.Management/managementGroups', parameters('targetMG'))]",
+        "policyDefinitionName": "enable-subDiag",
+        "policyAssignmentName": "deplyIfNot-subDiag",
+        "policyDefinitionDisplayName": "Enable subscription diagnostic settings",
+        "policyAssignmentDisplayName": "Ensure subscription audit logs are sent to log analytics",
+        "rbacRoleId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyDefinitions",
+            "name": "[variables('policyDefinition')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "policyType": "Custom",
+                "mode": "All",
+    "parameters": {
+        "functionName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Azure Function Name",
+                "description": "This will be the Azure Function that contains the Function that will be triggered by Event Grid"
+            },
+            "defaultValue": "func-governance-pwsh"
+        },
+        "function": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Function within Azure Function",
+                "description": "This will be the Function within the Azure Function that will be triggered by Event Grid"
+            },
+            "defaultValue": "set-resource-creator-tag-event-grid"
+        },
+        "functionResourceGroupName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Azure Function Resource Group Name",
+                "description": "The Resource Group Name that contains the Azure Function to build the resource id."
+            },
+            "defaultValue": "rg-governance"
+        },
+        "functionSubscriptionId": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Azure Function Subscription Id",
+                "description": "The Subscription Id that contains the Azure Function to build the resource id."
+            }
+        },
+        "functionStorageAccountName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Azure Function Storage Account Name",
+                "description": "The name of the Storage Account that the Azure Function uses."
+            }
+        },
+        "storageQueueName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Storage Queue Name",
+                "description": "The name of the Storage Queue to send events from Event Grid Subscription Topic."
+            },
+            "defaultValue": "event-grid-subscription-topic"
+        },
+        "resourceGroupName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Resource group name",
+                "description": "Enter the resource group name where the Event Grid Subscription Topic will be created. If you enter a name for a resource group that doesn’t exist, it’ll be created in the subscription."
+            }
+        },
+        "resourceGroupLocation": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Resource group location",
+                "description": "Select the location of the resource group",
+                "strongType": "location"
+            },
+            "defaultValue": "eastus2"
+        },
+        "eventGridTopicName": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Event Grid Subscription Topic name",
+                "description": "The name of the Event Grid Topic. If left blank a topic name will be created."
+            },
+            "defaultValue": ""
+        },
+        "tags": {
+            "type": "Object",
+            "metadata": {
+                "displayName": "Tags to be applied",
+                "description": "Tags to be applied to the Resource Group and Event Grid Subscription Topic."
+            },
+            "defaultValue": {}
+        }
+    },
+    "policyRule": {
+        "if": {
+            "field": "type",
+            "equals": "Microsoft.Resources/subscriptions"
+        },
+        "then": {
+            "effect": "deployIfNotExists",
+            "details": {
+                "type": "Microsoft.EventGrid/systemTopics",
+                "name": "[parameters('eventGridTopicName')]",
+                "ResourceGroupName": "[parameters('resourceGroupName')]",
+                "deploymentScope": "subscription",
+                "roleDefinitionIds": [
+                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+                ],
+                "deployment": {
+                    "location": "[parameters('resourceGroupLocation')]",
+                    "properties": {
+                        "mode": "incremental",
+                        "template": {
+                            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                            "contentVersion": "1.0.0.0",
+                            "parameters": {
+                                "functionName": {
+                                    "type": "string"
+                                },
+                                "function": {
+                                    "type": "string"
+                                },
+                                "functionSubscriptionId": {
+                                    "type": "string"
+                                },
+                                "functionResourceGroupName": {
+                                    "type": "string"
+                                },
+                                "functionStorageAccountName": {
+                                    "type": "String"
+                                },
+                                "storageQueueName": {
+                                    "type": "String"
+                                },
+                                "resourceGroupName": {
+                                    "type": "string"
+                                },
+                                "resourceGroupLocation": {
+                                    "type": "string"
+                                },
+                                "eventGridTopicName": {
+                                    "type": "string"
+                                },
+                                "eventGridSubscriptionName": {
+                                    "type": "string"
+                                },
+                                "subscriptionAzureResourceId": {
+                                    "type": "string"
+                                },
+                                "subscriptionId": {
+                                    "type": "string"
+                                },
+                                "tags": {
+                                    "type": "object"
+                                }
+                            },
+                            "variables": {
+                                "eventGridTopicName": "[if(equals(parameters('eventGridTopicName'), ''), concat('evgt-subscriptions-topic'), parameters('eventGridTopicName'))]"
+                            },
+                            "resources": [
+                                {
+                                    "name": "[parameters('resourceGroupName')]",
+                                    "type": "Microsoft.Resources/resourceGroups",
+                                    "apiVersion": "2019-10-01",
+                                    "location": "[parameters('resourceGroupLocation')]",
+                                    "tags": "[parameters('tags')]",
+                                    "properties": {}
+                                },
+                                {
+                                    "type": "Microsoft.Resources/deployments",
+                                    "apiVersion": "2019-10-01",
+                                    "name": "nestedDeployment",
+                                    "resourceGroup": "[parameters('resourceGroupName')]",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]"
+                                    ],
+                                    "properties": {
+                                        "mode": "Incremental",
+                                        "template": {
+                                            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                                            "contentVersion": "1.0.0.0",
+                                            "parameters": {
+                                                "eventGridTopicName": {
+                                                    "type": "String"
+                                                },
+                                                "functionName": {
+                                                    "type": "String"
+                                                },
+                                                "function": {
+                                                    "type": "String"
+                                                },
+                                                "functionSubscriptionId": {
+                                                    "type": "String"
+                                                },
+                                                "functionResourceGroupName": {
+                                                    "type": "String"
+                                                },
+                                                "functionStorageAccountName": {
+                                                    "type": "String"
+                                                },
+                                                "storageQueueName": {
+                                                    "type": "String"
+                                                },
+                                                "tags": {
+                                                    "type": "Object",
+                                                    "defaultValue": {}
+                                                }
+                                            },
+                                            "variables": {},
+                                            "resources": [
+                                                {
+                                                    "name": "[variables('eventGridTopicName')]",
+                                                    "type": "Microsoft.EventGrid/systemTopics",
+                                                    "apiVersion": "2020-04-01-preview",
+                                                    "location": "global",
+                                                    "tags": "[parameters('tags')]",
+                                                    "properties": {
+                                                        "source": "[subscription().id]",
+                                                        "topicType": "Microsoft.Resources.Subscriptions"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "[concat(variables('eventGridTopicName'), '/', 'evgs-', parameters('function'))]",
+                                                    "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+                                                    "apiVersion": "2020-04-01-preview",
+                                                    "dependsOn": [
+                                                        "[variables('eventGridTopicName')]"
+                                                    ],
+                                                    "properties": {
+                                                        "destination": {
+                                                            "endpointType": "AzureFunction",
+                                                            "properties": {
+                                                                "resourceId": "[concat(resourceId(parameters('functionSubscriptionId'), parameters('functionResourceGroupName'), 'Microsoft.Web/sites', parameters('functionName')), '/functions/', parameters('function'))]",
+                                                                "maxEventsPerBatch": 1,
+                                                                "preferredBatchSizeInKilobytes": 64
+                                                            }
+                                                        },
+                                                        "filter": {
+                                                            "includedEventTypes": [
+                                                                "Microsoft.Resources.ResourceWriteSuccess"
+                                                            ],
+                                                            "advancedFilters": [
+                                                                {
+                                                                    "key": "data.operationName",
+                                                                    "operatorType": "StringNotIn",
+                                                                    "values": [
+                                                                        "Microsoft.Resources/tags/write",
+                                                                        "SubscriptionValidationEvent"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "key": "data.resourceUri",
+                                                                    "operatorType": "StringNotIn",
+                                                                    "values": [
+                                                                        "Microsoft.Resources/tags",
+                                                                        "Microsoft.Resources/deployments",
+                                                                        "Microsoft.Network/frontdoor",
+                                                                        "Microsoft.Insights/autoscalesettings",
+                                                                        "Microsoft.Compute/virtualMachines/extensions",
+                                                                        "Microsoft.Compute/restorePointCollections",
+                                                                        "Microsoft.Classic",
+                                                                        "Microsoft.Authorization/policies"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "name": "[concat(variables('eventGridTopicName'), '/', 'evgs-', parameters('storageQueueName'))]",
+                                                    "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+                                                    "apiVersion": "2020-04-01-preview",
+                                                    "dependsOn": [
+                                                        "[variables('eventGridTopicName')]"
+                                                    ],
+                                                    "properties": {
+                                                        "destination": {
+                                                            "endpointType": "StorageQueue",
+                                                            "properties": {
+                                                                "resourceId": "[concat(resourceId(parameters('functionSubscriptionId'), parameters('functionResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName')))]",
+                                                                "queueName": "[parameters('storageQueueName')]",
+                                                                "queueMessageTimeToLiveInSeconds": 604800
+                                                            }
+                                                        },
+                                                        "filter": {
+                                                            "includedEventTypes": [
+                                                                "Microsoft.Resources.ResourceWriteSuccess"
+                                                            ],
+                                                            "advancedFilters": [
+                                                                {
+                                                                    "key": "data.operationName",
+                                                                    "operatorType": "StringNotIn",
+                                                                    "values": [
+                                                                        "Microsoft.Resources/tags/write",
+                                                                        "SubscriptionValidationEvent"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "key": "data.resourceUri",
+                                                                    "operatorType": "StringNotIn",
+                                                                    "values": [
+                                                                        "Microsoft.Resources/tags",
+                                                                        "Microsoft.Resources/deployments",
+                                                                        "Microsoft.Network/frontdoor",
+                                                                        "Microsoft.Insights/autoscalesettings",
+                                                                        "Microsoft.Compute/virtualMachines/extensions",
+                                                                        "Microsoft.Compute/restorePointCollections",
+                                                                        "Microsoft.Classic",
+                                                                        "Microsoft.Authorization/policies"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "parameters": {
+                            "eventGridTopicName": {
+                                "value": "[parameters('eventGridTopicName')]"
+                            },
+                            "functionName": {
+                                "value": "[parameters('functionName')]"
+                            },
+                            "function": {
+                                "value": "[parameters('function')]"
+                            },
+                            "functionSubscriptionId": {
+                                "value": "[parameters('functionSubscriptionId')]"
+                            },
+                            "functionResourceGroupName": {
+                                "value": "[parameters('functionResourceGroupName')]"
+                            },
+                            "functionStorageAccountName": {
+                                "value": "[parameters('functionStorageAccountName')]"
+                            },
+                            "storageQueueName": {
+                                "value": "[parameters('storageQueueName')]"
+                            },
+                            "resourceGroupName": {
+                                "value": "[parameters('resourceGroupName')]"
+                            },
+                            "resourceGroupLocation": {
+                                "value": "[parameters('resourceGroupLocation')]"
+                            },
+                            "tags": {
+                                "value": "[parameters('tags')]"
+                            },
+                            "subscriptionAzureResourceId": {
+                                "value": "[subscription().id]"
+                            },
+                            "subscriptionId": {
+                                "value": "[subscription().subscriptionId]"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policyAssignments",
+            "name": "location-lock",
+            "apiVersion": "2019-09-01",
+            "dependsOn": [
+                "[variables('policyDefinition')]"
+            ],
+            "properties": {
+                "scope": "[variables('mgScope')]",
+                "policyDefinitionId": "[extensionResourceId(variables('mgScope'), 'Microsoft.Authorization/policyDefinitions', variables('policyDefinition'))]"
+            }
+        },
+        {
+            "name": "string",
+            "type": "Microsoft.PolicyInsights/remediations",
+            "apiVersion": "2019-07-01",
+            "properties": {
+                "policyAssignmentId": "[concat('/providers/Microsoft.Management/managementGroups/', parameters('targetMG'), '/providers/Microsoft.Authorization/policyAssignments/', variables('policyAssignmentName'))]",
+                "policyDefinitionReferenceId": "[concat('/providers/Microsoft.Management/managementGroups/', parameters('targetMG'), '/providers/Microsoft.Authorization/policyDefinitions/', variables('policyDefinition'))]",
+            }
+        }
+    ]
+}

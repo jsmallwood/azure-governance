@@ -85,7 +85,7 @@ do {
         $Cmd=new-object system.Data.SqlClient.SqlCommand
         $Cmd.Connection = $Conn
         $Cmd.CommandTimeout = $SqlTimeout
-        $Cmd.CommandText = "SELECT * FROM [dbo].[$LogAnalyticsIngestControlTable] WHERE CollectedType IN ('ARGLoadBalancer','AzureConsumption')"
+        $Cmd.CommandText = "SELECT * FROM [dbo].[$LogAnalyticsIngestControlTable] WHERE CollectedType IN ('ARGLoadBalancer','AzureConsumption','ARGResourceContainers')"
     
         $sqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
         $sqlAdapter.SelectCommand = $Cmd
@@ -107,8 +107,9 @@ if (-not($connectionSuccess))
 
 $lbsTableName = $lognamePrefix + ($controlRows | Where-Object { $_.CollectedType -eq 'ARGLoadBalancer' }).LogAnalyticsSuffix + "_CL"
 $consumptionTableName = $lognamePrefix + ($controlRows | Where-Object { $_.CollectedType -eq 'AzureConsumption' }).LogAnalyticsSuffix + "_CL"
+$subscriptionsTableName = $lognamePrefix + ($controlRows | Where-Object { $_.CollectedType -eq 'ARGResourceContainers' }).LogAnalyticsSuffix + "_CL"
 
-Write-Output "Will run query against tables $lbsTableName and $consumptionTableName"
+Write-Output "Will run query against tables $lbsTableName, $subscriptionsTableName and $consumptionTableName"
 
 $Conn.Close()    
 $Conn.Dispose()            
@@ -131,22 +132,38 @@ $baseQuery = @"
     let interval = 30d;
     let etime = todatetime(toscalar($consumptionTableName | summarize max(UsageDate_t))); 
     let stime = etime-interval; 
-
     $lbsTableName
     | where TimeGenerated > ago(1d)
     | where SkuName_s == 'Standard'
     | where (toint(BackendPoolsCount_s) == 0 or BackendIPCount_s == 0 or isempty(BackendIPCount_s)) and toint(InboundNatPoolsCount_s) == 0
     | where toint(LbRulesCount_s) != 0 or toint(InboundNatRulesCount_s) != 0 or toint(OutboundRulesCount_s) != 0
-    | distinct InstanceName_s, InstanceId_s, SubscriptionGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s 
+    | distinct InstanceName_s, InstanceId_s, SubscriptionGuid_g, TenantGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s 
     | join kind=leftouter (
         $consumptionTableName
         | where UsageDate_t between (stime..etime)
+        | project InstanceId_s, Cost_s, UsageDate_t
     ) on InstanceId_s
-    | summarize Last30DaysCost=sum(todouble(Cost_s)) by InstanceName_s, InstanceId_s, SubscriptionGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s    
+    | summarize Last30DaysCost=sum(todouble(Cost_s)) by InstanceName_s, InstanceId_s, SubscriptionGuid_g, TenantGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s    
+    | join kind=leftouter ( 
+        $subscriptionsTableName 
+        | where TimeGenerated > ago(1d)
+        | where ContainerType_s =~ 'microsoft.resources/subscriptions' 
+        | project SubscriptionGuid_g, SubscriptionName = ContainerName_s 
+    ) on SubscriptionGuid_g
 "@
 
-$queryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $workspaceId -Query $baseQuery -Timespan (New-TimeSpan -Days $recommendationSearchTimeSpan) -Wait 600 -IncludeStatistics
-$results = [System.Linq.Enumerable]::ToArray($queryResults.Results)
+try
+{
+    $queryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $workspaceId -Query $baseQuery -Timespan (New-TimeSpan -Days $recommendationSearchTimeSpan) -Wait 600 -IncludeStatistics
+    if ($queryResults)
+    {
+        $results = [System.Linq.Enumerable]::ToArray($queryResults.Results)        
+    }
+}
+catch
+{
+    Write-Warning -Message "Query failed. Debug the following query in the AOE Log Analytics workspace: $baseQuery"    
+}
 
 Write-Output "Costs query finished with $($results.Count) results."
 
@@ -171,6 +188,7 @@ foreach ($result in $results)
     | summarize FirstUnusedDate = min(TimeGenerated) by InstanceId_s, InstanceName_s, SkuName_s
     | join kind=inner (
         $consumptionTableName
+        | project InstanceId_s, Cost_s, UsageDate_t
     ) on InstanceId_s
     | where UsageDate_t > FirstUnusedDate
     | summarize CostsSinceUnused = sum(todouble(Cost_s)) by InstanceName_s, FirstUnusedDate, SkuName_s
@@ -178,7 +196,14 @@ foreach ($result in $results)
     $encodedQuery = [System.Uri]::EscapeDataString($queryText)
     $detailsQueryStart = $deploymentDate
     $detailsQueryEnd = $datetime.AddDays(8).ToString("yyyy-MM-dd")
-    $detailsURL = "https://portal.azure.com#@$workspaceTenantId/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/resourceId/%2Fsubscriptions%2F$workspaceSubscriptionId%2Fresourcegroups%2F$workspaceRG%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2F$workspaceName/source/LogsBlade.AnalyticsShareLinkToQuery/query/$encodedQuery/timespan/$($detailsQueryStart)T00%3A00%3A00.000Z%2F$($detailsQueryEnd)T00%3A00%3A00.000Z"
+    switch ($cloudEnvironment)
+    {
+        "AzureCloud" { $azureTld = "com" }
+        "AzureChinaCloud" { $azureTld = "cn" }
+        "AzureUSGovernment" { $azureTld = "us" }
+        default { $azureTld = "com" }
+    }
+    $detailsURL = "https://portal.azure.$azureTld#@$workspaceTenantId/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/resourceId/%2Fsubscriptions%2F$workspaceSubscriptionId%2Fresourcegroups%2F$workspaceRG%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2F$workspaceName/source/LogsBlade.AnalyticsShareLinkToQuery/query/$encodedQuery/timespan/$($detailsQueryStart)T00%3A00%3A00.000Z%2F$($detailsQueryEnd)T00%3A00%3A00.000Z"
 
     $additionalInfoDictionary = @{}
 
@@ -221,6 +246,8 @@ foreach ($result in $results)
         AdditionalInfo = $additionalInfoDictionary
         ResourceGroup = $result.ResourceGroupName_s
         SubscriptionGuid = $result.SubscriptionGuid_g
+        SubscriptionName = $result.SubscriptionName
+        TenantGuid = $result.TenantGuid_g
         FitScore = $fitScore
         Tags = $tags
         DetailsURL = $detailsURL
@@ -246,11 +273,27 @@ $baseQuery = @"
     $lbsTableName
     | where TimeGenerated > ago(1d)
     | where (toint(BackendPoolsCount_s) == 0 or BackendIPCount_s == 0 or isempty(BackendIPCount_s)) and toint(InboundNatPoolsCount_s) == 0
-    | distinct InstanceName_s, InstanceId_s, SubscriptionGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s 
+    | distinct InstanceName_s, InstanceId_s, SubscriptionGuid_g, TenantGuid_g, ResourceGroupName_s, SkuName_s, Tags_s, Cloud_s 
+    | join kind=leftouter ( 
+        $subscriptionsTableName
+        | where TimeGenerated > ago(1d) 
+        | where ContainerType_s =~ 'microsoft.resources/subscriptions' 
+        | project SubscriptionGuid_g, SubscriptionName = ContainerName_s 
+    ) on SubscriptionGuid_g
 "@
 
-$queryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $workspaceId -Query $baseQuery -Timespan (New-TimeSpan -Days 2) -Wait 600 -IncludeStatistics
-$results = [System.Linq.Enumerable]::ToArray($queryResults.Results)
+try 
+{
+    $queryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $workspaceId -Query $baseQuery -Timespan (New-TimeSpan -Days 2) -Wait 600 -IncludeStatistics
+    if ($queryResults)
+    {
+        $results = [System.Linq.Enumerable]::ToArray($queryResults.Results)
+    }
+}
+catch
+{
+    Write-Warning -Message "Query failed. Debug the following query in the AOE Log Analytics workspace: $baseQuery"    
+}
 
 Write-Output "Operational Excellence query finished with $($results.Count) results."
 
@@ -264,8 +307,16 @@ $timestamp = $datetime.ToString("yyyy-MM-ddTHH:mm:00.000Z")
 
 foreach ($result in $results)
 {
+    switch ($result.Cloud_s)
+    {
+        "AzureCloud" { $azureTld = "com" }
+        "AzureChinaCloud" { $azureTld = "cn" }
+        "AzureUSGovernment" { $azureTld = "us" }
+        default { $azureTld = "com" }
+    }
+
     $queryInstanceId = $result.InstanceId_s
-    $detailsURL = "https://portal.azure.com/#@$workspaceTenantId/resource/$queryInstanceId/overview"
+    $detailsURL = "https://portal.azure.$azureTld/#@$workspaceTenantId/resource/$queryInstanceId/overview"
 
     $additionalInfoDictionary = @{}
 
@@ -306,6 +357,8 @@ foreach ($result in $results)
         AdditionalInfo = $additionalInfoDictionary
         ResourceGroup = $result.ResourceGroupName_s
         SubscriptionGuid = $result.SubscriptionGuid_g
+        SubscriptionName = $result.SubscriptionName
+        TenantGuid = $result.TenantGuid_g
         FitScore = $fitScore
         Tags = $tags
         DetailsURL = $detailsURL

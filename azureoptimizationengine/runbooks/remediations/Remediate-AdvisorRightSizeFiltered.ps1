@@ -1,6 +1,6 @@
 param(
-    [Parameter(Mandatory = $true)]
-    [bool] $Simulate = $false
+    [Parameter(Mandatory = $false)]
+    [bool] $Simulate = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -55,7 +55,7 @@ if (-not($rightSizeRecommendationId)) {
     $rightSizeRecommendationId = 'e10b1381-5f0a-47ff-8c7b-37bd13d7c974'
 }
 
-$SqlTimeout = 120
+$SqlTimeout = 0
 $recommendationsTable = "Recommendations"
 
 Write-Output "Logging in to Azure with $authenticationOption..."
@@ -94,10 +94,10 @@ do {
         $Cmd.Connection = $Conn
         $Cmd.CommandTimeout = $SqlTimeout
         $Cmd.CommandText = @"
-        SELECT RecommendationId, InstanceId, InstanceName, AdditionalInfo, ResourceGroup, SubscriptionGuid, Tags, COUNT(InstanceId)
+        SELECT InstanceId, Cloud, TenantGuid, JSON_VALUE(AdditionalInfo, '`$.currentSku') AS CurrentSKU, JSON_VALUE(AdditionalInfo, '`$.targetSku') AS TargetSKU, COUNT(InstanceId)
         FROM [dbo].[$recommendationsTable] 
         WHERE RecommendationSubTypeId = '$rightSizeRecommendationId' AND FitScore >= $minFitScore AND GeneratedDate >= GETDATE()-(7*$minWeeksInARow)
-        GROUP BY InstanceId, InstanceName, AdditionalInfo, ResourceGroup, SubscriptionGuid, Tags
+        GROUP BY InstanceId, Cloud, TenantGuid, JSON_VALUE(AdditionalInfo, '`$.currentSku'), JSON_VALUE(AdditionalInfo, '`$.targetSku')
         HAVING COUNT(InstanceId) >= $minWeeksInARow
 "@    
         $sqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
@@ -120,6 +120,9 @@ if (-not($connectionSuccess))
 
 Write-Output "Found $($vmsToRightSize.Rows.Count) remediation opportunities."
 
+$Conn.Close()    
+$Conn.Dispose()            
+
 $logEntries = @()
 
 $datetime = (get-date).ToUniversalTime()
@@ -131,79 +134,78 @@ $ctx = Get-AzContext
 
 foreach ($vm in $vmsToRightSize.Rows)
 {
-    $isVmEligible = $false
+    $isEligible = $false
+    $logDetails = $null
     if ([string]::IsNullOrEmpty($tagsFilter))
     {
-        $isVmEligible = $true
+        $isEligible = $true
     }
     else
     {
-        $vmTags = $null
-        if (-not([string]::IsNullOrEmpty($vm.Tags)))
-        {
-            $vmTags = $vm.Tags | ConvertFrom-Json
-        }
+        $vmTags = Get-AzTag -ResourceId $vm.InstanceId -ErrorAction SilentlyContinue
         if ($vmTags)
         {
             foreach ($tagFilter in $tagsFilter)
             {
-                if ($vmTags.($tagFilter.tagName) -eq $tagFilter.tagValue)
+                if ($vmTags.Properties.TagsProperty.($tagFilter.tagName) -eq $tagFilter.tagValue)
                 {
-                    $isVmEligible = $true
+                    $isEligible = $true
                 }
                 else
                 {
-                    $isVmEligible = $false
+                    $isEligible = $false
                     break
                 }
             }
         }
     }
 
-    $additionalInfo = $vm.AdditionalInfo | ConvertFrom-Json
-
-    if ($isVmEligible -and $additionalInfo.targetSku -ne "Shutdown")
+    $subscriptionId = $vm.InstanceId.Split("/")[2]
+    $resourceGroup = $vm.InstanceId.Split("/")[4]
+    $instanceName = $vm.InstanceId.Split("/")[8]
+    
+    if ($isEligible)
     {
-        Write-Output "Downsizing (SIMULATE=$Simulate) $($vm.InstanceId) to $($additionalInfo.targetSku)..."
-        if (-not($Simulate))
+        Write-Output "Downsizing (SIMULATE=$Simulate) $($vm.InstanceId) to $($vm.TargetSKU)..."
+        if (-not($Simulate) -and $ctx.Environment.Name -eq $vm.Cloud -and $ctx.Tenant.Id -eq $vm.TenantGuid)
         {
-            if ($ctx.Subscription.Id -ne $vm.SubscriptionGuid)
+            if ($ctx.Subscription.Id -ne $subscriptionId)
             {
-                Select-AzSubscription -SubscriptionId $vm.SubscriptionGuid | Out-Null
+                Select-AzSubscription -SubscriptionId $subscriptionId | Out-Null
                 $ctx = Get-AzContext
             }
-            $vmObj = Get-AzVM -ResourceGroupName $vm.ResourceGroup -VMName $vm.InstanceName
-            $vmObj.HardwareProfile.VmSize = $additionalInfo.targetSku
-            Update-AzVM -VM $vmObj -ResourceGroupName $vm.ResourceGroup    
+            $vmObj = Get-AzVM -ResourceGroupName $resourceGroup -VMName $instanceName
+            $vmObj.HardwareProfile.VmSize = $vm.TargetSKU
+            Update-AzVM -VM $vmObj -ResourceGroupName $resourceGroup
+        }
+        else
+        {
+            Write-Output "Did not apply remediation."    
         }
     }
 
     $logDetails = @{
-        IsVmEligible = $isVmEligible
-        CurrentSku = $additionalInfo.currentSku
-        TargetSku = $additionalInfo.targetSku
+        IsEligible = $isEligible
+        CurrentSku = $vm.CurrentSKU
+        TargetSku = $vm.TargetSKU
     }
 
     $logentry = New-Object PSObject -Property @{
         Timestamp = $timestamp
-        Cloud = $cloudEnvironment
-        SubscriptionGuid = $vm.SubscriptionGuid
-        ResourceGroupName = $vm.ResourceGroup.ToLower()
-        InstanceName = $vm.InstanceName.ToLower()
+        Cloud = $vm.Cloud
+        TenantGuid = $vm.TenantGuid
+        SubscriptionGuid = $subscriptionId
+        ResourceGroupName = $resourceGroup.ToLower()
+        InstanceName = $instanceName.ToLower()
         InstanceId = $vm.InstanceId.ToLower()
         Simulate = $Simulate
-        LogDetails = $logDetails
-        RecommendationId = $vm.RecommendationId
+        LogDetails = $logDetails | ConvertTo-Json
         RecommendationSubTypeId = $rightSizeRecommendationId
     }
     
     $logEntries += $logentry
 }
     
-$Conn.Close()    
-$Conn.Dispose()            
-
-
 $today = $datetime.ToString("yyyyMMdd")
 $csvExportPath = "$today-rightsizefiltered.csv"
 

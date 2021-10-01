@@ -3,7 +3,7 @@ param(
     [String] $AzureEnvironment = "AzureCloud",
 
     [Parameter(Mandatory = $false)] 
-    [String[]] $WorkspaceIds,
+    [String[]] $WorkspaceIds ,
 
     [Parameter(Mandatory = $false)]
     [switch] $AutoFix,
@@ -31,6 +31,7 @@ $wsIds = foreach ($workspaceId in $WorkspaceIds)
 {
     "'$workspaceId'"
 }
+
 if ($wsIds)
 {
     $wsIds = $wsIds -join ","
@@ -41,36 +42,43 @@ $perfCounters = Get-Content -Path ".\perfcounters.json" | ConvertFrom-Json
 
 $ARGPageSize = 1000
 
-$subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"}
-
 $argQuery = "resources | where type =~ 'microsoft.operationalinsights/workspaces'$whereWsIds | order by id"
 
-$workspaces = Search-AzGraph -Query $argQuery -First $ARGPageSize -Subscription $subscriptions
+$subscriptions = (Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"} )
+
+$workspaces = Search-AzGraph -Query $argQuery -First $ARGPageSize # -Subscription $subscriptions
 
 Write-Output "Found $($workspaces.Count) workspaces."
 
 $laQuery = "Heartbeat | where TimeGenerated > ago(1d) and ComputerEnvironment == 'Azure' | distinct Computer | summarize AzureComputersCount = count()"
 
-foreach ($workspace in $workspaces) {
+foreach ($workspace in $workspaces.Data) 
+{
+    Get-AzSubscription -SubscriptionId $workspace.Data.subscriptionId | Set-AzContext
+
+    $objWorkspace = Get-AzOperationalInsightsWorkspace -Name $workspace.Data.name -ResourceGroupName $workspace.Data.resourceGroup
+
+
     $laQueryResults = $null
     $results = $null
-    $laQueryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $workspace.properties.customerId -Query $laQuery -Timespan (New-TimeSpan -Days 1) -ErrorAction Continue
+    $laQueryResults = Invoke-AzOperationalInsightsQuery -WorkspaceId $objWorkspace.CustomerId -Query $laQuery -Timespan (New-TimeSpan -Days 1) -ErrorAction Continue
     if ($laQueryResults)
     {
         $results = [System.Linq.Enumerable]::ToArray($laQueryResults.Results)
-        Write-Output "$($workspace.name) ($($workspace.properties.customerId)): $($results.AzureComputersCount) Azure computers connected."    
+        Write-Output "$($workspace.name) ($($objWorkspace.CustomerId)): $($results.AzureComputersCount) Azure computers connected."    
     }
     else
     {
-        Write-Output "$($workspace.name) ($($workspace.properties.customerId)): could not validate connected computers."
+        Write-Output "$($workspace.name) ($($objWorkspace.CustomerId)): could not validate connected computers."
     }
+
     if ($results.AzureComputersCount -gt 0)
     {
-        if ($ctx.Subscription.SubscriptionId -ne $workspace.subscriptionId)
-        {
-            $ctx = Set-AzContext -SubscriptionId $workspace.subscriptionId
-        }
-        $dsWindows = Get-AzOperationalInsightsDataSource -ResourceGroupName $workspace.resourceGroup -WorkspaceName $workspace.name -Kind WindowsPerformanceCounter
+        $dsWindows = Get-AzOperationalInsightsDataSource -ResourceGroupName $workspace.Data.resourceGroup -WorkspaceName $workspace.Data.name -Kind WindowsPerformanceCounter
+        
+        $ds
+        Write-Output "Windows Performance Counters gathered"
+
         foreach ($perfCounter in ($perfCounters | Where-Object {$_.osType -eq "Windows"})) {
             if (-not($dsWindows | Where-Object { $_.Properties.ObjectName -eq $perfCounter.objectName -and $_.Properties.InstanceName -eq $perfCounter.instance `
                 -and $_.Properties.CounterName -eq $perfCounter.counterName}))
@@ -80,7 +88,7 @@ foreach ($workspace in $workspaces) {
                 {
                     Write-Output "Fixing..."
                     $dsName = "DataSource_WindowsPerformanceCounter_$(New-Guid)"
-                    New-AzOperationalInsightsWindowsPerformanceCounterDataSource -ResourceGroupName $workspace.resourceGroup -WorkspaceName $workspace.name `
+                    New-AzOperationalInsightsWindowsPerformanceCounterDataSource -ResourceGroupName $workspace.Data.resourceGroup -WorkspaceName $workspace.Data.name `
                         -Name $dsName -ObjectName $perfCounter.objectName -CounterName $perfCounter.counterName -InstanceName $perfCounter.instance `
                         -IntervalSeconds $IntervalSeconds -Force | Out-Null
                 }
@@ -88,7 +96,7 @@ foreach ($workspace in $workspaces) {
         }
 
         $missingLinuxCounters = @()
-        $dsLinux = Get-AzOperationalInsightsDataSource -ResourceGroupName $workspace.resourceGroup -WorkspaceName $workspace.name -Kind LinuxPerformanceObject
+        $dsLinux = Get-AzOperationalInsightsDataSource -ResourceGroupName $workspace.Data.resourceGroup -WorkspaceName $workspace.Data.name -Kind LinuxPerformanceObject
         foreach ($perfCounter in ($perfCounters | Where-Object {$_.osType -eq "Linux"})) {
             if (-not($dsLinux | Where-Object { $_.Properties.ObjectName -eq $perfCounter.objectName -and $_.Properties.InstanceName -eq $perfCounter.instance `
                 -and ($_.Properties.PerformanceCounters | Where-Object { $_.CounterName -eq $perfCounter.counterName }) }))
@@ -128,7 +136,7 @@ foreach ($workspace in $workspaces) {
                 $missingCounterNames = ($missingObjectCounters).counterName
     
                 Write-Output "Adding $linuxObject object..."
-                New-AzOperationalInsightsLinuxPerformanceObjectDataSource -ResourceGroupName $workspace.resourceGroup -WorkspaceName $workspace.name `
+                New-AzOperationalInsightsLinuxPerformanceObjectDataSource -ResourceGroupName $workspace.Data.resourceGroup -WorkspaceName $workspace.Data.name `
                     -Name "DataSource_LinuxPerformanceObject_$(New-Guid)" -ObjectName $linuxObject -InstanceName $missingInstance -IntervalSeconds $IntervalSeconds `
                     -CounterNames $missingCounterNames -Force | Out-Null
             }    

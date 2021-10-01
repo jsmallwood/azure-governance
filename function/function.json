@@ -22,6 +22,27 @@
                 "description": "The name of the App Service Plan."
             },
             "defaultValue": ""
+        },
+        "budgetTagNames": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service Plan."
+            },
+            "defaultValue": "CostCenter"
+        },
+        "CreatedByTagName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service Plan."
+            },
+            "defaultValue": "CreatedBy"
+        },
+        "CreatedOnDateTagName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service Plan."
+            },
+            "defaultValue": "CreatedOnDate"
         }
     },
     "functions": [],
@@ -73,8 +94,9 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
                 "siteConfig": {
-                    "appSettings": [            {
-                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2019-06-01').keys[0].value)]"
                         },
                         {
@@ -92,6 +114,66 @@
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "powershell"
+                        },
+                        {
+                            "name": "BUDGET_CONTACT_EMAILS",
+                            "value": "",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "BUDGET_MANAGMENT_GROUP_TEMPLATE_URL",
+                            "value": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/budget-ManagementGroup.json",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "BUDGET_SCOPE",
+                            "value": "",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "BUDGET_SUBSCRIPTION_IDs",
+                            "value": "",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "BUDGET_TAG_NAMES",
+                            "value": "[parameters('budgetTagNames')]",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "CREATED_BY_TAG_NAME",
+                            "value": "[parameters('CreatedByTagName')]",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "CREATED_ON_DATE_TAG_NAME",
+                            "value": "[parameters('CreatedOnDateTagName')]",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "EVENT_GRID_LOCATION",
+                            "value": "[resourceGroup().location]",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "EVENT_GRID_RESOURCE_GROUP_NAME",
+                            "value": "",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "EVENT_GRID_SUBSCRIPTION_TEMPLATE_URL",
+                            "value": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/eventGrid-Subscription.json",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "EVENT_GRID_TOPIC_NAME",
+                            "value": "",
+                            "slotSetting": false
+                        },
+                        {
+                            "name": "EVENT_GRID_TOPIC_TEMPLATE_URL",
+                            "value": "https://raw.githubusercontent.com/jsmallwood/azure-governance/main/function/eventGrid-Topic.json",
+                            "slotSetting": false
                         }
                     ]
                 }

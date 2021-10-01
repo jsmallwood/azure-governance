@@ -1,8 +1,8 @@
 ﻿[CmdletBinding()]
 param(
-    [String] $RootPolicyFolder,
-    [String] $ManagementGroupName,
-    [Bool] $RemoveExistingCustomPolicies = $False,
+    [String] $RootPolicyFolder = 'D:\github\azure-governance\policy\policies\definitions',
+    [String] $ManagementGroupName = 'a8b7290b-8363-4333-81d5-041ac3b2c81c',
+    [Bool] $RemoveExistingCustomPolicies = $True,
     [Bool] $RemoveAllPolicies = $True
 )
 
@@ -274,9 +274,12 @@ if(!($ManagementGroupName))
     $ManagementGroupName = Get-AzManagementGroupName -managementGroupName $ManagementGroupName
 }
 
-if($RemoveExistingPolicies -eq $true) { Remove-CustomPolicies -All:$RemoveAllPolicies -ManagementGroupName $ManagementGroupName }
+#if($RemoveExistingPolicies -eq $true) { Remove-CustomPolicies -All:$RemoveAllPolicies -ManagementGroupName $ManagementGroupName }
 
 $policyList = Get-Policies -rootDir $RootPolicyFolder
 
 Add-Policies -Policies $policyList -managementGroupName $ManagementGroupName
 #endregion
+
+
+#Get-AzPolicyDefinition -Custom -SubscriptionId "9333ff49-e576-423a-982f-545d2eb5ed65" | % { Remove-AzPolicyDefinition -Name $_.Name -SubscriptionId "9333ff49-e576-423a-982f-545d2eb5ed65" -Force }

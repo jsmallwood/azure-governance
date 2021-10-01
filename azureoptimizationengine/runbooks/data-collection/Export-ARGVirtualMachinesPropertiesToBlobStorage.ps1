@@ -82,6 +82,8 @@ if (-not([string]::IsNullOrEmpty($externalCredentialName)))
     $cloudEnvironment = $externalCloudEnvironment   
 }
 
+$tenantId = (Get-AzContext).Tenant.Id
+
 $allvms = @()
 
 Write-Output "Getting subscriptions target $TargetSubscription"
@@ -93,7 +95,7 @@ if (-not([string]::IsNullOrEmpty($TargetSubscription)))
 else
 {
     $subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"}
-    $subscriptionSuffix = $cloudSuffix + "all"
+    $subscriptionSuffix = $cloudSuffix + "all-" + $tenantId
 }
 
 $armVmsTotal = @()
@@ -116,6 +118,13 @@ $argQuery = @"
     | extend bootDiagnosticsEnabled = tostring(properties.diagnosticsProfile.bootDiagnostics.enabled)
     | extend bootDiagnosticsStorageAccount = split(split(properties.diagnosticsProfile.bootDiagnostics.storageUri, '/')[2],'.')[0]
     | extend powerState = tostring(properties.extended.instanceView.powerState.code) 
+    | extend imagePublisher = iif(isnotempty(properties.storageProfile.imageReference.publisher),tostring(properties.storageProfile.imageReference.publisher),'Custom')
+    | extend imageOffer = iif(isnotempty(properties.storageProfile.imageReference.offer),tostring(properties.storageProfile.imageReference.offer),tostring(properties.storageProfile.imageReference.id))
+    | extend imageSku = tostring(properties.storageProfile.imageReference.sku)
+    | extend imageVersion = tostring(properties.storageProfile.imageReference.version)
+    | extend imageExactVersion = tostring(properties.storageProfile.imageReference.exactVersion)
+    | extend osName = tostring(properties.extended.instanceView.osName)
+    | extend osVersion = tostring(properties.extended.instanceView.osVersion)
     | order by id asc
 "@
 
@@ -127,7 +136,11 @@ do
     }
     else
     {
-        $armVms = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $armVms = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($armVms -and $armVms.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $armVms = $armVms.Data
     }
     $resultsCount = $armVms.Count
     $resultsSoFar += $resultsCount
@@ -152,6 +165,7 @@ $argQuery = @"
 	| extend bootDiagnosticsEnabled = tostring(properties.debugProfile.bootDiagnosticsEnabled)
     | extend bootDiagnosticsStorageAccount = split(split(properties.debugProfile.serialOutputBlobUri, '/')[2],'.')[0]
     | extend powerState = tostring(properties.instanceView.status)
+    | extend imageOffer = tostring(properties.storageProfile.operatingSystemDisk.sourceImageName)
     | order by id asc
 "@
 
@@ -163,7 +177,11 @@ do
     }
     else
     {
-        $classicVms = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $classicVms = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($classicVms -and $classicVms.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $classicVms = $classicVms.Data
     }
     $resultsCount = $classicVms.Count
     $resultsSoFar += $resultsCount
@@ -206,6 +224,7 @@ foreach ($vm in $armVmsTotal)
         CoresCount = $vmSize.NumberOfCores
         MemoryMB = $vmSize.MemoryInMB
         OSType = $vm.properties.storageProfile.osDisk.osType
+        LicenseType = $vm.properties.licenseType
         DataDiskCount = $vm.dataDiskCount
         NicCount = $vm.nicCount
         UsesManagedDisks = $vm.usesManagedDisks
@@ -214,6 +233,13 @@ foreach ($vm in $armVmsTotal)
         BootDiagnosticsStorageAccount = $vm.bootDiagnosticsStorageAccount
         StatusDate = $statusDate
         PowerState = $vm.powerState
+        ImagePublisher = $vm.imagePublisher
+        ImageOffer = $vm.imageOffer
+        ImageSku = $vm.imageSku
+        ImageVersion = $vm.imageVersion
+        ImageExactVersion = $vm.imageExactVersion
+        OSName = $vm.osName
+        OSVersion = $vm.osVersion
         Tags = $vm.tags
     }
     
@@ -246,6 +272,7 @@ foreach ($vm in $classicVmsTotal)
         CoresCount = $vmSize.NumberOfCores
         MemoryMB = $vmSize.MemoryInMB
         OSType = $vm.properties.storageProfile.operatingSystemDisk.operatingSystem
+        LicenseType = "N/A"
         DataDiskCount = $vm.dataDiskCount
         NicCount = $vm.nicCount
         UsesManagedDisks = $vm.usesManagedDisks
@@ -254,6 +281,13 @@ foreach ($vm in $classicVmsTotal)
         BootDiagnosticsStorageAccount = $vm.bootDiagnosticsStorageAccount
         PowerState = $vm.powerState
         StatusDate = $statusDate
+        ImagePublisher = $vm.imagePublisher
+        ImageOffer = $vm.imageOffer
+        ImageSku = $vm.imageSku
+        ImageVersion = $vm.imageVersion
+        ImageExactVersion = $vm.imageExactVersion
+        OSName = $vm.osName
+        OSVersion = $vm.osVersion
         Tags = $null
     }
     

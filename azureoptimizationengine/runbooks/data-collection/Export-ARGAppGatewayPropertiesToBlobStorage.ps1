@@ -73,6 +73,8 @@ if (-not([string]::IsNullOrEmpty($externalCredentialName)))
     $cloudEnvironment = $externalCloudEnvironment   
 }
 
+$tenantId = (Get-AzContext).Tenant.Id
+
 $allAppGWs = @()
 
 Write-Output "Getting subscriptions target $TargetSubscription"
@@ -84,7 +86,7 @@ if (-not([string]::IsNullOrEmpty($TargetSubscription)))
 else
 {
     $subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"}
-    $subscriptionSuffix = $cloudSuffix + "all"
+    $subscriptionSuffix = $cloudSuffix + "all-" + $tenantId
 }
 
 $appGWsTotal = @()
@@ -106,7 +108,7 @@ resources
 | extend probesCount = array_length(properties.probes)
 | extend rewriteRulesCount = array_length(properties.rewriteRuleSets)
 | extend redirectConfsCount = array_length(properties.redirectConfigurations)
-| project id, name, resourceGroup, subscriptionId, tenantId, location, skuName = properties.sku.name, skuTier = properties.sku.tier, skuCapacity = properties.sku.capacity, enableHttp2 = properties.enableHttp2, gatewayIPsCount, frontendIPsCount, frontendPortsCount, httpSettingsCount, httpListenersCount, backendPoolsCount, urlPathMapsCount, requestRoutingRulesCount, probesCount, rewriteRulesCount, redirectConfsCount, tags
+| project id, name, resourceGroup, subscriptionId, tenantId, location, zones, skuName = properties.sku.name, skuTier = properties.sku.tier, skuCapacity = properties.sku.capacity, enableHttp2 = properties.enableHttp2, gatewayIPsCount, frontendIPsCount, frontendPortsCount, httpSettingsCount, httpListenersCount, backendPoolsCount, urlPathMapsCount, requestRoutingRulesCount, probesCount, rewriteRulesCount, redirectConfsCount, tags
 | join kind=leftouter (
 	resources
 	| where type =~ 'Microsoft.Network/applicationGateways'
@@ -126,7 +128,11 @@ do
     }
     else
     {
-        $appGWs = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $appGWs = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($appGWs -and $appGWs.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $appGWs = $appGWs.Data
     }
     $resultsCount = $appGWs.Count
     $resultsSoFar += $resultsCount
@@ -158,6 +164,7 @@ foreach ($appGW in $appGWsTotal)
         SkuTier = $appGW.skuTier
         SkuCapacity = $appGW.skuCapacity
         Location = $appGW.location
+        Zones = $appGW.zones
         EnableHttp2 = $appGW.enableHttp2
         GatewayIPsCount = $appGW.gatewayIPsCount
         FrontendIPsCount = $appGW.frontendIPsCount

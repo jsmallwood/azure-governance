@@ -73,6 +73,8 @@ if (-not([string]::IsNullOrEmpty($externalCredentialName)))
     $cloudEnvironment = $externalCloudEnvironment   
 }
 
+$tenantId = (Get-AzContext).Tenant.Id
+
 $alldisks = @()
 
 Write-Output "Getting subscriptions target $TargetSubscription"
@@ -84,7 +86,7 @@ if (-not([string]::IsNullOrEmpty($TargetSubscription)))
 else
 {
     $subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } | ForEach-Object { "$($_.Id)"}
-    $subscriptionSuffix = $cloudSuffix + "all"
+    $subscriptionSuffix = $cloudSuffix + "all-" + $tenantId
 }
 
 $mdisksTotal = @()
@@ -109,7 +111,11 @@ do
     }
     else
     {
-        $mdisks = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $mdisks = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($mdisks -and $mdisks.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $mdisks = $mdisks.Data
     }
     $resultsCount = $mdisks.Count
     $resultsSoFar += $resultsCount
@@ -141,7 +147,11 @@ do
     }
     else
     {
-        $mdisks = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions 
+        $mdisks = Search-AzGraph -Query $argQuery -First $ARGPageSize -Skip $resultsSoFar -Subscription $subscriptions
+    }
+    if ($mdisks -and $mdisks.GetType().Name -eq "PSResourceGraphResponse")
+    {
+        $mdisks = $mdisks.Data
     }
     $resultsCount = $mdisks.Count
     $resultsSoFar += $resultsCount

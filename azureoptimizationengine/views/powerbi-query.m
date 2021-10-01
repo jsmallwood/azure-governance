@@ -1,5 +1,5 @@
 let
-    Source = Sql.Database("sqlsrv-azoe.database.windows.net", "sqldb-azoe", [Query="EXEC GetRecommendations", CommandTimeout=#duration(0, 2, 0, 0)]),
+    Source = Sql.Database("aoedevgithub-sql.database.windows.net", "azureoptimization", [Query="EXEC GetRecommendations", CommandTimeout=#duration(0, 2, 0, 0)]),
     #"Parsed JSON Tags" = Table.TransformColumns(Source,{{"Tags", Json.Document}}),
     #"Expanded Tags" = Table.ExpandRecordColumn(#"Parsed JSON Tags", "Tags", {"environment", "costcenter"}, {"Tags.Environment", "Tags.CostCenter"}),
     #"Trimmed Text" = Table.TransformColumns(#"Expanded Tags",{{"Tags.Environment", Text.Trim, type text}, {"Tags.CostCenter", Text.Trim, type text}}),
