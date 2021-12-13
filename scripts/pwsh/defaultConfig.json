@@ -1,0 +1,18 @@
+{
+    "StartDate": "(Get-Date).AddDays(-1)",
+    "EndDate": "(Get-Date)",
+    "ConfigFiles": {
+        "apiVersions": {
+            "name": "apiVersionConfig.json"
+        },
+        "exports": {
+            "name": "exportConfig.json"
+        },
+        "reservations": {
+            "name": "reservationConfig.json"
+        }
+    },
+    "BillingAccountId": "",
+    "RegionPrimary": "eastus2",
+    "RegionSecondary": "centralus" 
+}

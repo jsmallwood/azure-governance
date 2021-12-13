@@ -1,0 +1,76 @@
+{
+    "DefaultResourceTypes": ["VirtualMachines", "SQLDatabases", "PostgreSQL", "ManagedDisk", "MySQL", "RedHat", "MariaDB", "RedisCache", "CosmosDB", "SqlDataWarehouse", "SUSELinux", "AppService", "BlockBlob", "AzureDataExplorer", "VMwareCloudSimple"],
+    "LookBackPeriod": "Last7Days",
+    "ReservationScope": "Single",
+    "ResourceTypes": {
+        "AppService": {
+            "App_Service_Isolated_Plan_Stamp_Fee": {
+                "Description": "Stamp Fee",
+                "Environment": {
+                    "Production": {
+                        "Term": "P3Y"
+                    },
+                    "Test": {
+                        "Term": "P3Y"
+                    },
+                    "Development": {
+                        "Term": "P3Y"
+                    }
+                }
+            },
+            "App_Service_I1_v2_windows": {
+                "Description": "Worker Instance",
+                "Environment": {
+                    "Production": {
+                        "Term": "P3Y"
+                    },
+                    "Test": {
+                        "Term": "P1Y"
+                    },
+                    "Development": {
+                        "Term": "P1Y"
+                    }
+                }
+            }
+        },
+        "SQLDatabases": {
+            "Environment": {
+                "Production": {
+                    "Term": "P3Y"
+                },
+                "Test": {
+                    "Term": "P1Y"
+                },
+                "Development": {
+                    "Term": "P1Y"
+                }
+            }
+        },
+        "SqlDataWarehouse": {
+            "Environment": {
+                "Production": {
+                    "Term": "P3Y"
+                },
+                "Test": {
+                    "Term": "P1Y"
+                },
+                "Development": {
+                    "Term": "P1Y"
+                }
+            }
+        },
+        "VirtualMachines": {
+            "Environment": {
+                "Production": {
+                    "Term": "P3Y"
+                },
+                "Test": {
+                    "Term": "P3Y"
+                },
+                "Development": {
+                    "Term": "P3Y"
+                }
+            }
+        }
+    }
+}

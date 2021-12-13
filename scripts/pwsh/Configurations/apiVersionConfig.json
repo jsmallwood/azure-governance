@@ -1,0 +1,6 @@
+{
+    "ApiVersions": {
+        "Billing": "2021-10-01",
+        "Consumption": "2021-10-01"
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "ExportDir": {
+        "Consumption": {
+            "PriceSheet": {
+                "Path": "Consumption\\PriceSheets" 
+            },
+            "UsageDetails": {
+                "Path": "Consumption\\Usage" 
+            },
+            "Reservations": {
+                "Path": "Consumption\\Reservations" 
+            },
+            "Budgets": {
+                "Path": "Consumption\\Budgets" 
+            }
+        }
+    }, 
+    "ExportFileName": {
+        "Consumption": {
+            "RetailPriceSheet": {
+                "Name": "RetailPriceSheet" 
+            },
+            "PriceSheet": {
+                "Path": "PriceSheet" 
+            },
+            "Reservations": {
+                "Recommendations": {
+                    "Name": "RI_Recommendations"
+                },
+                "RecommendationDetails": {
+                    "Name": "RI_RecommendationDetails"
+                },
+                "Summaries": {
+                    "Name": "RI_Summaries"
+                },
+                "Usage": {
+                    "Name": "RI_Usage"
+                },
+                "Transactions": {
+                    "Name": "RI_Transactions"
+                }
+            },
+            "Budgets": {
+                "Name": "Budgets"
+            },
+            "Usage": {
+                "Name": "Usage"
+            }
+        }
+    }
+}
