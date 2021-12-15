@@ -1,0 +1,15 @@
+resources
+| where type =~ 'Microsoft.Compute/snapshots'
+| extend skuName = tostring(sku.name), skuTier = tostring(sku.tier), sourceResourceId = tostring(properties.creationData.sourceResourceId), creationOption = tostring(properties.creationData.creationOption), sourceUniqueId = tostring(properties.creationData.sourceUniqueId)
+| project id, name, location, skuName, skuTier, sourceResourceId, creationOption, sourceUniqueId, diskSizeGB = properties.diskSizeGB, timeCreated = properties.timeCreated, diskState = properties.diskState
+| join kind=leftouter (
+resources
+| where type =~ 'Microsoft.Compute/disks'
+| project sourceResourceId = id, sourceName = name, sourceLocation = location, sourceManagedBy = managedBy, sourceSkuName = sku.name, sourceSkuTier = sku.tier, sourceDiskSizeGB = properties.diskSizeGB, sourceTimeCreated = properties.timeCreated, sourceDiskState = properties.diskState
+| join kind=leftouter(
+resources
+| where type =~ 'Microsoft.Compute/virtualMachines'
+| extend VMPowerStateCode = tostring(properties.extended.instanceView.powerState.code), VMPowerStateStatus = tostring(properties.extended.instanceView.powerState.status)
+| project sourceManagedBy = id, VMName = name, VMResourceGroup = resourceGroup, VMPowerStateStatus, VMPowerStateCode
+) on sourceManagedBy
+) on sourceResourceId
