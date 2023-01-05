@@ -1,0 +1,16 @@
+{
+    "Disks": [
+        {
+            "id": "",
+            "name": "bazeu2dwapmdm01_OsDisk_1_04bef0f9ce1a4156a4c2a35bc45185f5",
+            "Composite Disk Read Operations/sec": [
+                {
+                    "TimeStamp":  "5/18/2022 9:14:00 PM",
+                    "Average":  0.26666666666666666
+                }
+            ]
+        }
+    ]
+}
+
+

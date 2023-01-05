@@ -1,0 +1,889 @@
+{
+    "VirtualMachine": [
+        {
+            "Name":  {
+                         "Value":  "Percentage CPU",
+                         "LocalizedValue":  "Percentage CPU"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Network In",
+                         "LocalizedValue":  "Network In Billable (Deprecated)"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Network Out",
+                         "LocalizedValue":  "Network Out Billable (Deprecated)"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Disk Read Bytes",
+                         "LocalizedValue":  "Disk Read Bytes"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Disk Write Bytes",
+                         "LocalizedValue":  "Disk Write Bytes"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Disk Read Operations/Sec",
+                         "LocalizedValue":  "Disk Read Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Disk Write Operations/Sec",
+                         "LocalizedValue":  "Disk Write Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "CPU Credits Remaining",
+                         "LocalizedValue":  "CPU Credits Remaining"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "CPU Credits Consumed",
+                         "LocalizedValue":  "CPU Credits Consumed"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Read Bytes/sec",
+                         "LocalizedValue":  "Data Disk Read Bytes/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Write Bytes/sec",
+                         "LocalizedValue":  "Data Disk Write Bytes/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Read Operations/Sec",
+                         "LocalizedValue":  "Data Disk Read Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Write Operations/Sec",
+                         "LocalizedValue":  "Data Disk Write Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Queue Depth",
+                         "LocalizedValue":  "Data Disk Queue Depth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Bandwidth Consumed Percentage",
+                         "LocalizedValue":  "Data Disk Bandwidth Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk IOPS Consumed Percentage",
+                         "LocalizedValue":  "Data Disk IOPS Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Target Bandwidth",
+                         "LocalizedValue":  "Data Disk Target Bandwidth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Target IOPS",
+                         "LocalizedValue":  "Data Disk Target IOPS"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Max Burst Bandwidth",
+                         "LocalizedValue":  "Data Disk Max Burst Bandwidth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Max Burst IOPS",
+                         "LocalizedValue":  "Data Disk Max Burst IOPS"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Used Burst BPS Credits Percentage",
+                         "LocalizedValue":  "Data Disk Used Burst BPS Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Data Disk Used Burst IO Credits Percentage",
+                         "LocalizedValue":  "Data Disk Used Burst IO Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Read Bytes/sec",
+                         "LocalizedValue":  "OS Disk Read Bytes/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Write Bytes/sec",
+                         "LocalizedValue":  "OS Disk Write Bytes/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Read Operations/Sec",
+                         "LocalizedValue":  "OS Disk Read Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Write Operations/Sec",
+                         "LocalizedValue":  "OS Disk Write Operations/Sec"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Queue Depth",
+                         "LocalizedValue":  "OS Disk Queue Depth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Bandwidth Consumed Percentage",
+                         "LocalizedValue":  "OS Disk Bandwidth Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk IOPS Consumed Percentage",
+                         "LocalizedValue":  "OS Disk IOPS Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Target Bandwidth",
+                         "LocalizedValue":  "OS Disk Target Bandwidth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Target IOPS",
+                         "LocalizedValue":  "OS Disk Target IOPS"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Max Burst Bandwidth",
+                         "LocalizedValue":  "OS Disk Max Burst Bandwidth"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Max Burst IOPS",
+                         "LocalizedValue":  "OS Disk Max Burst IOPS"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Used Burst BPS Credits Percentage",
+                         "LocalizedValue":  "OS Disk Used Burst BPS Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "OS Disk Used Burst IO Credits Percentage",
+                         "LocalizedValue":  "OS Disk Used Burst IO Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Inbound Flows",
+                         "LocalizedValue":  "Inbound Flows"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Outbound Flows",
+                         "LocalizedValue":  "Outbound Flows"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Inbound Flows Maximum Creation Rate",
+                         "LocalizedValue":  "Inbound Flows Maximum Creation Rate"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Outbound Flows Maximum Creation Rate",
+                         "LocalizedValue":  "Outbound Flows Maximum Creation Rate"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Premium Data Disk Cache Read Hit",
+                         "LocalizedValue":  "Premium Data Disk Cache Read Hit"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Premium Data Disk Cache Read Miss",
+                         "LocalizedValue":  "Premium Data Disk Cache Read Miss"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  [
+                               {
+                                   "Value":  "LUN",
+                                   "LocalizedValue":  "LUN"
+                               }
+                           ],
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Premium OS Disk Cache Read Hit",
+                         "LocalizedValue":  "Premium OS Disk Cache Read Hit"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Premium OS Disk Cache Read Miss",
+                         "LocalizedValue":  "Premium OS Disk Cache Read Miss"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Cached Bandwidth Consumed Percentage",
+                         "LocalizedValue":  "VM Cached Bandwidth Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Cached IOPS Consumed Percentage",
+                         "LocalizedValue":  "VM Cached IOPS Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Uncached Bandwidth Consumed Percentage",
+                         "LocalizedValue":  "VM Uncached Bandwidth Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Uncached IOPS Consumed Percentage",
+                         "LocalizedValue":  "VM Uncached IOPS Consumed Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Network In Total",
+                         "LocalizedValue":  "Network In Total"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Network Out Total",
+                         "LocalizedValue":  "Network Out Total"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  5,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "Available Memory Bytes",
+                         "LocalizedValue":  "Available Memory Bytes (Preview)"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VmAvailabilityMetric",
+                         "LocalizedValue":  "VM Availability Metric (Preview)"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Remote Used Burst IO Credits Percentage",
+                         "LocalizedValue":  "VM Uncached Used Burst IO Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Remote Used Burst BPS Credits Percentage",
+                         "LocalizedValue":  "VM Uncached Used Burst BPS Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Local Used Burst IO Credits Percentage",
+                         "LocalizedValue":  "VM Cached Used Burst IO Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        },
+        {
+            "Name":  {
+                         "Value":  "VM Local Used Burst BPS Credits Percentage",
+                         "LocalizedValue":  "VM Cached Used Burst BPS Credits Percentage"
+                     },
+            "Category":  null,
+            "MetricClass":  null,
+            "Unit":  null,
+            "PrimaryAggregationType":  1,
+            "SupportedAggregationTypes":  null,
+            "DisplayDescription":  null,
+            "Dimensions":  null,
+            "IsDimensionsRequired":  null
+        }
+    ]
+}
