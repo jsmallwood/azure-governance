@@ -1,0 +1,90 @@
+Function Replace-AzTagKey
+{
+    param(
+        [String] $ResourceId,
+        [String] $OldKey,
+        [String] $NewKey
+    )
+
+    begin { 
+        try {
+            $objResourceTags = Get-AzTag -ResourceId $ResourceId -ErrorAction Stop
+        }
+        catch {
+            Write-Error $_
+        }
+    }
+    process {
+
+        if( $OldKey -match "(.*)\s" )
+        {
+
+            if(-not!($objResourceTags.Properties.TagsProperty["$($OldKey)"]))
+            {
+                $Value = $objResourceTags.Properties.TagsProperty["$($OldKey)"]
+            }
+
+            if(!($Value))
+            {
+                $Value = $objResourceTags.Properties.TagsProperty["$($OldKey) "]
+            }
+
+            if(-not!($Value))
+            {
+                $OldTag = @{ "$($OldKey)" = $Value }
+            }
+            else
+            {
+                break
+            }
+        }
+        else
+        {
+            $Value = $objResourceTags.Properties.TagsProperty[$OldKey]
+            $OldTag = @{ $OldKey = $Value }
+        }
+
+        $NewTag = @{ $NewKey = $Value }
+
+        if(-not!($Value ))
+        {
+
+            try {
+                if( ( $objResourceTags.Properties.TagsProperty.ContainsKey("$($OldKey) ") -or $objResourceTags.Properties.TagsProperty.ContainsKey("$($OldKey)") ) -and $objResourceTags.Properties.TagsProperty.ContainsKey("$($NewKey)") )
+                {
+                    # Remove the old tag with incorrect value
+                    Update-AzTag -ResourceId $ResourceId -Tag $OldTag -Operation Delete -Verbose -ErrorAction Stop
+                }
+                else
+                {
+                    # Create the new tag with original value
+                    Update-AzTag -ResourceId $ResourceId -Tag $NewTag -Operation Merge -Verbose -ErrorAction Stop
+
+                    # Remove the old tag with incorrect value
+                    Update-AzTag -ResourceId $ResourceId -Tag $OldTag -Operation Delete -Verbose -ErrorAction Stop
+                }
+
+                $result = [PSCustomObject] @{
+                    ResourceId = $ResourceId
+                    OldKey = $OldKey
+                    NewKey = $NewKey
+                    KeyValue = $Value
+                }
+
+                Remove-Variable -Name Value
+                Remove-Variable -Name OldTag
+                Remove-Variable -Name NewTag
+            } catch {
+                Write-Error $_
+            }
+        }
+
+    }
+    end {
+        return $result
+    }
+}
+
+$ResourceId = ""
+
+Replace-AzTagKey -ResourceId $ResourceId -OldKey "Application " -NewKey "Application"
